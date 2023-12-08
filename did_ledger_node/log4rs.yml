@@ -1,0 +1,60 @@
+# Scan this file for changes every 30 seconds
+refresh_rate: 30 seconds
+
+appenders:
+  # An appender named "stdout" that writes to stdout
+  stdout:
+    kind: console
+    filters:
+      - kind: threshold
+        level: debug
+
+  trace:
+    kind: console
+    filters:
+      - kind: threshold
+        level: trace
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {l}:{m}{n}"
+
+  debug:
+    kind: console
+    filters:
+      - kind: threshold
+        level: debug
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {l}:{m}{n}"
+
+  info:
+    kind: console
+    filters:
+      - kind: threshold
+        level: info
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {l}:{m}{n}"
+
+  warn:
+    kind: console
+    filters:
+      - kind: threshold
+        level: warn
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {l}:{m}{n}"
+
+  error:
+    kind: console
+    filters:
+      - kind: threshold
+        level: error
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {l}:{m}{n}"
+
+# Set the default logging level to "warn" and attach the "stdout" appender to the root
+root:
+  appenders:
+    - stdout
+    - trace
+    - debug
+    - info
+    - warn
+    - error
