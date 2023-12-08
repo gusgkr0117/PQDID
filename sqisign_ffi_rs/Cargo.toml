@@ -1,0 +1,12 @@
+[package]
+name = "sqisign_ffi_rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.75"
+hex = "0.4.3"
+serde = { version = "1.0.193", features = ["derive"] }
+serde-big-array = "0.5.1"
