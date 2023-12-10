@@ -10,6 +10,5 @@ pub struct DidDocuments {
     pub did: i64,
     pub user_did: Option<i64>,
     pub doc_data: String,
-    pub timestamp: SystemTime,
     pub sig: Option<Vec<u8>>,
 }

@@ -13,10 +13,22 @@ services:
       DID_PUBKEY_1: 2261DC6D1982946CC8BE93AA1496517EAAE4DE77AC54DE44779B4B8C73BC23149505381D9B4415EFDE87472D81C815D4511901C8A78935E51EBB7746B103E528
       DID_PUBKEY_2: 2443ABDD40A36C031A1B2F8C025E84B98BF167D8AAD5D7192A53C3CDDA1C871C34114EA3751E1C3C1E4D6CBC481B9D44E0084F0BCF9C5486E5995CCD70D37301
       DID_PUBKEY_3: 0E73E2C042FADE1D47B686EC6059D923828ABA6684CE43F1CDED95A0F103051F43F7228FAE6FFCC50FC34135E914DE7B1ADCFD54F5A7E2C2AD6CEF7506533E08
-      DATABASE_URL: postgres://diduser:didpw@localhost/diddb
+      DATABASE_URL: postgres://diduser:didpw@172.168.10.31/diddb
     networks:
       custom_network:
         ipv4_address: 172.168.10.11
+  
+  did-ledger-db-1:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: diduser
+      POSTGRES_PASSWORD: didpw
+      POSTGRES_DB: diddb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      custom_network:
+        ipv4_address: 172.168.10.31
 
   did-ledger-node-2:
     image: did/ledger_node:latest
@@ -30,10 +42,22 @@ services:
       DID_PUBKEY_1: 2443ABDD40A36C031A1B2F8C025E84B98BF167D8AAD5D7192A53C3CDDA1C871C34114EA3751E1C3C1E4D6CBC481B9D44E0084F0BCF9C5486E5995CCD70D37301
       DID_PUBKEY_2: 0E73E2C042FADE1D47B686EC6059D923828ABA6684CE43F1CDED95A0F103051F43F7228FAE6FFCC50FC34135E914DE7B1ADCFD54F5A7E2C2AD6CEF7506533E08
       DID_PUBKEY_3: AFC5C91681169FA7A7E5378AE886E0D580F0FB3B727E3DB2C92FA1BF603C492455812B7236DCBB61A61E999A69845ABC6D0427A1442806209A6686A831CB911D
-      DATABASE_URL: postgres://diduser:didpw@localhost/diddb
+      DATABASE_URL: postgres://diduser:didpw@172.168.10.32/diddb
     networks:
       custom_network:
         ipv4_address: 172.168.10.12
+  
+  did-ledger-db-2:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: diduser
+      POSTGRES_PASSWORD: didpw
+      POSTGRES_DB: diddb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      custom_network:
+        ipv4_address: 172.168.10.32
 
   did-ledger-node-3:
     image: did/ledger_node:latest
@@ -47,10 +71,22 @@ services:
       DID_PUBKEY_1: 0E73E2C042FADE1D47B686EC6059D923828ABA6684CE43F1CDED95A0F103051F43F7228FAE6FFCC50FC34135E914DE7B1ADCFD54F5A7E2C2AD6CEF7506533E08
       DID_PUBKEY_2: AFC5C91681169FA7A7E5378AE886E0D580F0FB3B727E3DB2C92FA1BF603C492455812B7236DCBB61A61E999A69845ABC6D0427A1442806209A6686A831CB911D
       DID_PUBKEY_3: 2261DC6D1982946CC8BE93AA1496517EAAE4DE77AC54DE44779B4B8C73BC23149505381D9B4415EFDE87472D81C815D4511901C8A78935E51EBB7746B103E528
-      DATABASE_URL: postgres://diduser:didpw@localhost/diddb
+      DATABASE_URL: postgres://diduser:didpw@172.168.10.33/diddb
     networks:
       custom_network:
         ipv4_address: 172.168.10.13
+  
+  did-ledger-db-3:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: diduser
+      POSTGRES_PASSWORD: didpw
+      POSTGRES_DB: diddb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      custom_network:
+        ipv4_address: 172.168.10.33
 
   did-ledger-node-4:
     image: did/ledger_node:latest
@@ -64,21 +100,22 @@ services:
       DID_PUBKEY_1: AFC5C91681169FA7A7E5378AE886E0D580F0FB3B727E3DB2C92FA1BF603C492455812B7236DCBB61A61E999A69845ABC6D0427A1442806209A6686A831CB911D
       DID_PUBKEY_2: 2261DC6D1982946CC8BE93AA1496517EAAE4DE77AC54DE44779B4B8C73BC23149505381D9B4415EFDE87472D81C815D4511901C8A78935E51EBB7746B103E528
       DID_PUBKEY_3: 2443ABDD40A36C031A1B2F8C025E84B98BF167D8AAD5D7192A53C3CDDA1C871C34114EA3751E1C3C1E4D6CBC481B9D44E0084F0BCF9C5486E5995CCD70D37301
-      DATABASE_URL: postgres://diduser:didpw@localhost/diddb
+      DATABASE_URL: postgres://diduser:didpw@172.168.10.34/diddb
     networks:
       custom_network:
         ipv4_address: 172.168.10.14
 
-  did-server-backend:
-    image: did/server_backend:latest
+  did-ledger-db-4:
+    image: postgres:latest
     environment:
-      DID_REMOTE_1: 172.168.10.11:8000
-      DID_REMOTE_2: 172.168.10.12:8000
-      DID_REMOTE_3: 172.168.10.13:8000
-      DID_REMOTE_4: 172.168.10.14:8000
+      POSTGRES_USER: diduser
+      POSTGRES_PASSWORD: didpw
+      POSTGRES_DB: diddb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       custom_network:
-        ipv4_address: 172.168.10.15
+        ipv4_address: 172.168.10.34
 
 networks:
   custom_network:

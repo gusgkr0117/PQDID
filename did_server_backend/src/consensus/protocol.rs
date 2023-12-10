@@ -1,4 +1,4 @@
-use crate::{consensus::types::ProtocolPacket, peers::send_to_peers};
+use crate::{consensus::types::ProtocolPacket, peers::{send_to_peers, send_to_peers_and_wait}};
 use anyhow::{bail, Result};
 use std::{
     collections::hash_map::DefaultHasher,
@@ -15,10 +15,11 @@ fn hash_data(data: &Vec<u8>) -> u64 {
     hasher.finish()
 }
 
-pub async fn send_consensus_packet(protocol_type: ProtocolType, data: Vec<u8>) -> Result<Vec<u8>> {
+pub async fn send_consensus_packet_and_wait(protocol_type: ProtocolType, data: Vec<u8>) -> Result<Vec<u8>> {
     let pkt = ProtocolPacket::new(protocol_type, data);
     let raw_packet_data = bincode::serialize(&pkt)?;
-    let response_list = send_to_peers(&raw_packet_data).await?;
+    println!("send_consensus_packet_and_wait called");
+    let response_list = send_to_peers_and_wait(&raw_packet_data).await?;
     let hash_list: Vec<u64> = response_list
         .clone()
         .into_iter()
@@ -32,4 +33,12 @@ pub async fn send_consensus_packet(protocol_type: ProtocolType, data: Vec<u8>) -
     }
 
     bail!("No response")
+}
+
+pub async fn send_consensus_packet(protocol_type: ProtocolType, data: Vec<u8>) -> Result<()> {
+    let pkt = ProtocolPacket::new(protocol_type, data);
+    let raw_packet_data = bincode::serialize(&pkt)?;
+    println!("send_consensus_packet called");
+    send_to_peers(&raw_packet_data).await?;
+    Ok(())
 }

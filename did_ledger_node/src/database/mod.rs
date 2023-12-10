@@ -21,7 +21,6 @@ impl Into<DidDocuments> for DidWallet {
             did: self.did,
             user_did: None,
             doc_data: hex::encode(self.public_key),
-            timestamp: SystemTime::now(),
             sig: None,
         }
     }
@@ -40,7 +39,6 @@ impl Into<DidDocuments> for DidIssuedCert {
             did: self.did,
             user_did: Some(self.issuer_did),
             doc_data: self.json_type.to_string(),
-            timestamp: SystemTime::now(),
             sig: Some(self.signature.value.to_vec()),
         }
     }
@@ -62,7 +60,6 @@ impl Into<DidDocuments> for DidRegisteredCert {
             doc_data: format!("{:#08X}", self.cert_did as u64)
                 + "&"
                 + hex::encode_upper(self.issuer_signature.value).as_str(),
-            timestamp: SystemTime::now(),
             sig: Some(self.signature.value.to_vec()),
         }
     }

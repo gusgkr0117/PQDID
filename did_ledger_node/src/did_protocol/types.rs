@@ -34,16 +34,13 @@ pub struct WriteDocRequest {
 
 #[derive(Serialize, Deserialize)]
 pub struct CreateWalletRequest {
+    pub did: i64,
     pub public_key: PublicKey,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct CreateWalletResponse {
-    pub did: i64,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct IssueCertRequest {
+    pub did: i64,
     pub issuer_did: i64,
     /// This string must be a json format
     pub json_type: serde_json::Value,
@@ -60,12 +57,8 @@ impl IssueCertRequest {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct IssueCertResponse {
-    pub did: i64,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct RegisterCertRequest {
+    pub did: i64,
     pub user_did: i64,
     pub cert_did: i64,
     /// This is private data
@@ -86,9 +79,4 @@ impl RegisterCertRequest {
         // TODO: verifying the user's signature and check the cert_info format
         verify_sig(raw_data, self.issuer_signature.clone(), issuer_pubkey)
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct RegisterCertResponse {
-    pub did: i64,
 }

@@ -11,7 +11,7 @@ use crate::{
 };
 use actix_web::{post, web, Responder};
 use hex::FromHex;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct RequestCertInfo {
@@ -68,8 +68,10 @@ pub async fn register_cert(
     let user_id = jwt_middle.user_id;
     let user_did = get_user_did(&mut db_conn, user_id).await?;
     let cert_did = cert.cert_did;
+    let new_did: i64 = rand::random();
 
     let reg_cert_request = RegisterCertRequest {
+        did: new_did,
         user_did,
         cert_did,
         cert_info: serde_json::from_str(cert_info.as_str())?,
@@ -78,10 +80,30 @@ pub async fn register_cert(
     };
 
     // Update did database
-    let response = did_protocol::protocol::register_cert(reg_cert_request).await?;
+    did_protocol::protocol::register_cert(reg_cert_request).await?;
 
     // Update local database
-    database::register_cert(&mut db_conn, reg_cert_info.cert_id, response.did).await?;
+    database::register_cert(&mut db_conn, reg_cert_info.cert_id, new_did).await?;
 
     Ok(web::Json(ApiResult::ok::<usize>(None)))
+}
+
+#[derive(Deserialize)]
+struct GetUserDidRequest {
+    user_id: String,
+}
+
+#[derive(Serialize)]
+struct GetUserDidResponse {
+    pub did: String,
+}
+
+#[post("/get_did")]
+pub async fn get_did(get_user_did_req: web::Json<GetUserDidRequest>) -> Result<impl Responder, Error> {
+    let mut db_conn = establish_connection().await;
+    let did = database::get_user_did(&mut db_conn, get_user_did_req.user_id.clone()).await?;
+    let result = GetUserDidResponse {
+        did: format!("{:08X}", did),
+    };
+    Ok(web::Json(ApiResult::ok(Some(result))))
 }

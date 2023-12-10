@@ -38,15 +38,13 @@ pub async fn issue_cert(
     let issuer_did = get_user_did(&mut db_conn, user_id.clone()).await?;
 
     // Issueing the certificate to did network
-    let issue_cert_response =
+    let new_did =
         did_protocol::protocol::issue_cert(issuer_did, precert_info.template.clone(), signature)
             .await?;
 
-    let cert_did = issue_cert_response.did;
-
     // Create a new precertificate
     let precert = PreCertificates {
-        did: cert_did,
+        did: new_did,
         issuer_id: user_id,
         template: precert_info.template.to_string(),
         cert_name: precert_info.cert_name.clone(),
@@ -55,7 +53,7 @@ pub async fn issue_cert(
     create_precert(&mut db_conn, precert).await?;
 
     let response = PrecertResponse {
-        cert_did: format!("{:#08X}", cert_did),
+        cert_did: format!("{:#08X}", new_did),
     };
     Ok(web::Json(ApiResult::ok(Some(response))))
 }

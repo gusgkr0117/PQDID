@@ -1,8 +1,6 @@
-FROM postgres
-COPY ./init.sql /docker-entrypoint-initdb.d/init.sql
-COPY ./target/x86_64-unknown-linux-gnu/debug/did_ledger_node /did_ledger_node
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y libpq-dev
+COPY ./target/debug/did_ledger_node /did_ledger_node
 COPY ./log4rs.yml /log4rs.yml
-ENV POSTGRES_USER=diduser
-ENV POSTGRES_PASSWORD=didpw
-ENV POSTGRES_DB=diddb
 CMD /did_ledger_node

@@ -20,7 +20,7 @@ pub fn identify_peer(pubkey: PublicKey) -> Result<Option<u8>> {
     let peer_pub_list: Vec<PublicKey> = get_peer_keys()?;
     for peer_num in 0..peer_pub_list.len() {
         if peer_pub_list[peer_num] == pubkey {
-            return Ok(Some(peer_num as u8));
+            return Ok(Some((peer_num + 1) as u8));
         }
     }
     Ok(None)

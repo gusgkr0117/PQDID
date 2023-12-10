@@ -5,7 +5,6 @@ diesel::table! {
         did -> Int8,
         user_did -> Nullable<Int8>,
         doc_data -> Text,
-        timestamp -> Timestamp,
         sig -> Nullable<Bytea>,
     }
 }

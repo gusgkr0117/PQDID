@@ -12,8 +12,8 @@ use crate::{
 };
 
 use super::types::{
-    CreateWalletRequest, CreateWalletResponse, IssueCertRequest, IssueCertResponse, ReadDocRequest,
-    ReadDocResponse, RegisterCertRequest, RegisterCertResponse, WriteDocRequest, WriteType,
+    CreateWalletRequest, IssueCertRequest, ReadDocRequest,
+    ReadDocResponse, RegisterCertRequest, WriteDocRequest, WriteType,
 };
 
 pub async fn did_run(local_addr: String) -> Result<()> {
@@ -34,8 +34,9 @@ pub async fn did_protocol(proto_type: ProtocolType, data: Vec<u8>) -> Result<Vec
         ProtocolType::Read => {
             let readdoc_req: ReadDocRequest = bincode::deserialize(&data)?;
             let mut db_conn = establish_connection().await;
+            println!("requested did #{:#08X}",readdoc_req.request_did);
             let did_doc = read_doc(&mut db_conn, readdoc_req.request_did).await?;
-            info!("Did document #{:#08X} is read", readdoc_req.request_did);
+            println!("Did document #{:#08X} is read", readdoc_req.request_did);
             let response = ReadDocResponse {
                 did_document: did_doc,
             };
@@ -43,26 +44,25 @@ pub async fn did_protocol(proto_type: ProtocolType, data: Vec<u8>) -> Result<Vec
         }
         ProtocolType::Write => {
             let writedoc_req: WriteDocRequest = bincode::deserialize(&data)?;
-            // The did must be generated deterministically
-            let new_did = hash_data(&data);
             match writedoc_req.write_type {
                 // corresponds to create_wallet in backend
                 WriteType::CreateWallet => {
+                    println!("CreateWallet called");
                     let create_wallet_req: CreateWalletRequest =
                         bincode::deserialize(&writedoc_req.value)?;
 
+                    println!("CreateWallet did : {}", create_wallet_req.did);
+
                     let mut db_conn = establish_connection().await;
                     let new_wallet = DidWallet {
-                        did: new_did,
+                        did: create_wallet_req.did,
                         public_key: create_wallet_req.public_key.value.to_vec(),
                     };
 
                     create_wallet(&mut db_conn, new_wallet).await?;
-                    info!("Create a new wallet #{:#08X}", new_did);
+                    info!("New wallet created #{:#08x}", create_wallet_req.did);
 
-                    let response = CreateWalletResponse { did: new_did };
-
-                    return Ok(bincode::serialize(&response).unwrap());
+                    return Ok(vec![]);
                 }
                 // corresponds to issue_cert in backend
                 WriteType::IssueCert => {
@@ -74,7 +74,7 @@ pub async fn did_protocol(proto_type: ProtocolType, data: Vec<u8>) -> Result<Vec
                     }
 
                     let did_issued_cert = DidIssuedCert {
-                        did: rand::random(),
+                        did: issue_cert_req.did,
                         issuer_did: issue_cert_req.issuer_did,
                         json_type: issue_cert_req.json_type,
                         signature: issue_cert_req.signature,
@@ -82,10 +82,9 @@ pub async fn did_protocol(proto_type: ProtocolType, data: Vec<u8>) -> Result<Vec
 
                     let mut db_conn = establish_connection().await;
                     issue_cert(&mut db_conn, did_issued_cert).await?;
-                    info!("New certificate has been issued #{:#08x}", new_did);
+                    info!("New certificate has been issued #{:#08x}", issue_cert_req.did);
 
-                    let response = IssueCertResponse { did: new_did };
-                    return Ok(bincode::serialize(&response).unwrap());
+                    return Ok(vec![]);
                 }
                 // corresponds to register_cert in backend
                 WriteType::RegisterCert => {
@@ -97,7 +96,7 @@ pub async fn did_protocol(proto_type: ProtocolType, data: Vec<u8>) -> Result<Vec
                     }
 
                     let did_registered_cert = DidRegisteredCert {
-                        did: rand::random(),
+                        did: register_cert_req.did,
                         user_did: register_cert_req.user_did,
                         cert_did: register_cert_req.cert_did,
                         issuer_signature: register_cert_req.issuer_signature,
@@ -106,9 +105,8 @@ pub async fn did_protocol(proto_type: ProtocolType, data: Vec<u8>) -> Result<Vec
 
                     let mut db_conn = establish_connection().await;
                     register_cert(&mut db_conn, did_registered_cert).await?;
-
-                    let response = RegisterCertResponse { did: new_did };
-                    return Ok(bincode::serialize(&response).unwrap());
+                    info!("New certificate is registered #{:#08x}", register_cert_req.did);
+                    return Ok(vec![]);
                 }
             }
         }

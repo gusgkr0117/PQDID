@@ -19,7 +19,6 @@ impl Into<DidDocuments> for DidWallet {
             did: self.did,
             user_did: None,
             doc_data: hex::encode(self.public_key.value),
-            timestamp: SystemTime::now(),
             sig: None,
         }
     }
@@ -47,7 +46,6 @@ impl Into<DidDocuments> for DidIssuedCert {
             did: self.did,
             user_did: Some(self.issuer_did),
             doc_data: self.json_type.to_string(),
-            timestamp: SystemTime::now(),
             sig: Some(self.signature.value.to_vec()),
         }
     }
@@ -81,7 +79,6 @@ impl Into<DidDocuments> for DidRegisteredCert {
             doc_data: format!("{:#08X}", self.cert_did as u64)
                 + "&"
                 + hex::encode_upper(self.issuer_signature.value).as_str(),
-            timestamp: SystemTime::now(),
             sig: Some(self.signature.value.to_vec()),
         }
     }
@@ -108,7 +105,6 @@ pub struct DidDocuments {
     pub did: i64,
     pub user_did: Option<i64>,
     pub doc_data: String,
-    pub timestamp: SystemTime,
     pub sig: Option<Vec<u8>>,
 }
 
@@ -137,16 +133,13 @@ pub struct WriteDocRequest {
 
 #[derive(Serialize, Deserialize)]
 pub struct CreateWalletRequest {
+    pub did: i64,
     pub public_key: PublicKey,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct CreateWalletResponse {
-    pub did: i64,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct IssueCertRequest {
+    pub did: i64,
     pub issuer_did: i64,
     /// This string must be a json format
     pub json_type: serde_json::Value,
@@ -154,12 +147,8 @@ pub struct IssueCertRequest {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct IssueCertResponse {
-    pub did: i64,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct RegisterCertRequest {
+    pub did: i64,
     pub user_did: i64,
     pub cert_did: i64,
     /// This is private data
@@ -168,9 +157,4 @@ pub struct RegisterCertRequest {
     pub cert_info: serde_json::Value,
     pub issuer_signature: Signature,
     pub user_signature: Signature,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct RegisterCertResponse {
-    pub did: i64,
 }

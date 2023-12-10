@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  did-server-backend:
+    image: did/server_backend:latest
+    environment:
+      LOCAL_IP: 172.168.10.15
+      DATABASE_URL: postgres://backuser:backpw@172.168.10.35/backdb
+      DID_REMOTE_1: 172.168.10.11:8000
+      DID_REMOTE_2: 172.168.10.12:8000
+      DID_REMOTE_3: 172.168.10.13:8000
+      DID_REMOTE_4: 172.168.10.14:8000
+    ports:
+      - "8000:8000"
+    networks:
+      did_ledger_node_custom_network:
+        ipv4_address: 172.168.10.15
+  did-server-backend-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: backuser
+      POSTGRES_PASSWORD: backpw
+      POSTGRES_DB: backdb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      did_ledger_node_custom_network:
+        ipv4_address: 172.168.10.35
+
+networks:
+  did_ledger_node_custom_network:
+    external: true

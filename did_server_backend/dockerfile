@@ -1,8 +1,5 @@
-FROM postgres
-COPY ./init.sql /docker-entrypoint-initdb.d/init.sql
-COPY ./target/x86_64-unknown-linux-gnu/debug/did_server_backend /did_server_backend
-COPY ./log4rs.yml /log4rs.yml
-ENV POSTGRES_USER=backuser
-ENV POSTGRES_PASSWORD=backpw
-ENV POSTGRES_DB=backdb
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y libpq-dev
+COPY ./target/debug/did_server_backend /did_server_backend
 CMD /did_server_backend
